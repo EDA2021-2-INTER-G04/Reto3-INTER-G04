@@ -90,8 +90,22 @@ while True:
             print("Fecha: ", actualUFO["datetime"], ", Ciudad: ", actualUFO["city"], ", País: ", actualUFO["country"], ", Forma: ", actualUFO["shape"], ", Duración: ", actualUFO["duration (seconds)"])
 
     elif int(inputs[0]) == 2:
-        print("El número de elementos en el RBT por ciudades es de ",om.size(catalog["cities"]) )
-        print("La altura del árbol RBT por ciudades es de ", om.height(catalog["cities"]))
+        city = input("Ingrese la ciudad a consultar: ")
+        sightnings = controller.ufosByCity(catalog, city)
+        print("\nEl número de elementos en el árbol rojo negro por ciudades es de ",om.size(catalog["cities"]) )
+        print("La altura del árbol rojo negro por ciudades es de ", om.height(catalog["cities"]))
+        print("\nEl número de ciudades donde se han visto OVNIs es de ", lt.size(om.keySet(catalog["cities"])))
+        print("\nSe han avistado ", lt.size(sightnings), " OVNIs en ", city)
+        print("Los tres primeros avistamientos en la ciudad son:")
+        for n in range(1,4):
+            actualUFO = lt.getElement(sightnings, n)
+            print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"], ", ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"], ", Forma: ", actualUFO["shape"])
+
+        print("\nLos últimos tres avistamientos en la ciudad son:")
+        for w in range(1,4):
+            index = (lt.size(sightnings)-3)+w
+            actualUFO = lt.getElement(sightnings, index)
+            print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"], ", ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"], ", Forma: ", actualUFO["shape"])
 
     else:
         sys.exit(0)

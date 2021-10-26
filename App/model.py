@@ -30,6 +30,8 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import mergesort as ms
+from datetime import datetime
 from DISClib.ADT import orderedmap as om
 assert cf
 
@@ -67,6 +69,12 @@ def addUFO(catalog, ufo):
 # Funciones para creacion de datos
 
 # Funciones de consulta
+def ufosByCity(catalog, city):
+        cityUfosList = om.get(catalog["cities"], city)["value"]
+        ms.sort(cityUfosList, cmpDateHour)        
+
+        return cityUfosList
+
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -78,3 +86,11 @@ def cmpStrings(string1, string2):
                 return 1
         else:
                 return -1
+
+def cmpDateHour(ufo1, ufo2):
+        datetime1str = ufo1["datetime"]
+        datetime2str = ufo2["datetime"]
+        time1 = datetime.strptime(datetime1str, "%Y-%m-%d %H:%M:%S")
+        time2 = datetime.strptime(datetime2str, "%Y-%m-%d %H:%M:%S")
+
+        return time1 < time2

@@ -62,3 +62,6 @@ def loadData(catalog, sample):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+def ufosByCity(catalog, city):
+
+    return model.ufosByCity(catalog, city)
