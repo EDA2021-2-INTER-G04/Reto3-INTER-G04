@@ -30,6 +30,7 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.ADT import orderedmap as om
 assert cf
 
 """
@@ -38,6 +39,28 @@ los mismos.
 """
 
 # Construccion de modelos
+def newCatalog():
+        catalog = {"ufos": None}
+
+        catalog["ufos"] = lt.newList("ARRAY_LIST")
+        catalog["cities"] = om.newMap(omaptype="RBT", comparefunction=cmpStrings)
+
+        return catalog
+
+def addUFO(catalog, ufo):
+        lt.addLast(catalog["ufos"], ufo)
+
+        city = ufo["city"]
+        isPresent = om.contains(catalog["cities"], city)
+        if isPresent == True:
+                listCities = om.get(catalog["cities"], city)["value"]
+                lt.addLast(listCities, ufo)
+                om.put(catalog["cities"], city, listCities)
+        else:
+                listCities = lt.newList('ARRAY_LIST')
+                lt.addLast(listCities, ufo)
+                om.put(catalog["cities"], city, listCities)
+
 
 # Funciones para agregar informacion al catalogo
 
@@ -48,3 +71,10 @@ los mismos.
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
+def cmpStrings(string1, string2):
+        if (string1 == string2):
+                return 0
+        elif (string1 > string2):
+                return 1
+        else:
+                return -1

@@ -31,6 +31,32 @@ El controlador se encarga de mediar entre la vista y el modelo.
 
 # Inicialización del Catálogo de libros
 
+def initCatalog():
+    return model.newCatalog()
+
+def loadData(catalog, sample):
+    if sample == 1:
+        file = "-small"
+    elif sample == 2:
+        file = "-5pct"
+    elif sample == 3:
+        file = "-10pct"
+    elif sample == 4:
+        file = "-20pct"
+    elif sample == 5:
+        file = "-30pct"
+    elif sample == 6:
+        file = "-50pct"
+    elif sample == 7:
+        file = "-80pct"
+    elif sample == 8:
+        file = "-large"
+
+    ufosFile = cf.data_dir + "UFOS-utf8" + file + ".csv"
+    input_file = csv.DictReader(open(ufosFile, encoding='utf-8'))
+    for ufo in input_file:
+        model.addUFO(catalog, ufo)
+
 # Funciones para la carga de datos
 
 # Funciones de ordenamiento
