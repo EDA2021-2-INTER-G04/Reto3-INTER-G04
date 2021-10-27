@@ -78,12 +78,11 @@ while True:
         print("Cargando información de los archivos ....")
         catalog = initCatalog()
         loadData(catalog, sample)
-        print("El número de avistamientos cargados fue de ", lt.size(catalog["ufos"]), ".")
-        print("Los primeros 5 avistamientos cargados son:")
+        print("\nEl número de avistamientos cargados fue de ", lt.size(catalog["ufos"]))
         for n in range(1, 6):
             actualUFO = lt.getElement(catalog["ufos"], n)
             print("Fecha: ", actualUFO["datetime"], ", Ciudad: ", actualUFO["city"], ", País: ", actualUFO["country"], ", Forma: ", actualUFO["shape"], ", Duración: ", actualUFO["duration (seconds)"])
-        print("\nLos últimos 5 avistamientos cargados son:")
+        print("="*100)
         for m in range(1, 6):
             index = (lt.size(catalog["ufos"])-5)+m
             actualUFO = lt.getElement(catalog["ufos"], index)
@@ -96,16 +95,64 @@ while True:
         print("La altura del árbol rojo negro por ciudades es de ", om.height(catalog["cities"]))
         print("\nEl número de ciudades donde se han visto OVNIs es de ", lt.size(om.keySet(catalog["cities"])))
         print("\nSe han avistado ", lt.size(sightnings), " OVNIs en ", city)
-        print("Los tres primeros avistamientos en la ciudad son:")
         for n in range(1,4):
             actualUFO = lt.getElement(sightnings, n)
             print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"], ", ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"], ", Forma: ", actualUFO["shape"])
-
-        print("\nLos últimos tres avistamientos en la ciudad son:")
+        print("="*100)
         for w in range(1,4):
             index = (lt.size(sightnings)-3)+w
             actualUFO = lt.getElement(sightnings, index)
             print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"], ", ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"], ", Forma: ", actualUFO["shape"])
+
+    elif int(inputs[0]) == 4:
+        hour0 = input("Ingrese desde qué hora filtrar los avistamientos (HH:MM): ")+":00"
+        hour1 = input("Ingrese hasta qué hora filtrar los avistamientos (HH:MM): ")+":00"
+        filtredUfos = controller.ufosByHour(catalog, hour0, hour1)
+        size = 0
+        for l in range(1, lt.size(filtredUfos)+1):
+            actualHour = lt.getElement(filtredUfos, l)
+            size += lt.size(actualHour)
+
+        hours = om.keySet(catalog["hours"])
+        print("\nLas horas más tardías donde se han visto OVNIs son:")
+        for p in range(1,6):
+            index = (lt.size(hours)+1)-p
+            actualHour = lt.getElement(hours, index)
+            print(actualHour, ": ", lt.size(om.get(catalog["hours"], actualHour)["value"]), " avistamientos.")
+
+        print("\nHay registro de ", size, " avistamientos entre las ", hour0, " y las ", hour1)
+
+        bigIndex = 1
+        counted = 1
+        while bigIndex <= lt.size(filtredUfos) and counted <= 3:
+            actualHour = lt.getElement(filtredUfos, bigIndex)
+            littleIndex = 1
+            while littleIndex <= lt.size(actualHour) and counted <= 3:
+                actualUFO = lt.getElement(actualHour, littleIndex)
+                print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"], ", ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"], ", Forma: ", actualUFO["shape"])
+                littleIndex += 1
+                counted += 1
+            bigIndex += 1
+        print("="*100)
+        lastThree = lt.newList("SINGLE_LINKED")
+        bigIndex = lt.size(filtredUfos)
+        counted = 1
+        while 1 <= bigIndex <= lt.size(filtredUfos) and counted <= 3:
+            actualHour = lt.getElement(filtredUfos, bigIndex)
+            littleIndex = lt.size(actualHour)
+            while 1 <= littleIndex <= lt.size(actualHour) and counted <= 3:
+                actualUFO = lt.getElement(actualHour, littleIndex)
+                lt.addFirst(lastThree, actualUFO)
+                littleIndex -= 1
+                counted += 1
+            bigIndex -= 1
+        for t in range(1, 4):
+            actualUFO = lt.getElement(lastThree, t)
+            print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"], ", ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"], ", Forma: ", actualUFO["shape"])
+
+        
+
+            
 
     else:
         sys.exit(0)

@@ -65,3 +65,7 @@ def loadData(catalog, sample):
 def ufosByCity(catalog, city):
 
     return model.ufosByCity(catalog, city)
+
+def ufosByHour(catalog, hour0, hour1):
+
+    return model.ufosByHour(catalog, hour0, hour1)

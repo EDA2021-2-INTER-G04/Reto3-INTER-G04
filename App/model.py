@@ -46,6 +46,7 @@ def newCatalog():
 
         catalog["ufos"] = lt.newList("ARRAY_LIST")
         catalog["cities"] = om.newMap(omaptype="RBT", comparefunction=cmpStrings)
+        catalog["hours"] = om.newMap(omaptype="RBT", comparefunction=cmpHours)
 
         return catalog
 
@@ -63,6 +64,18 @@ def addUFO(catalog, ufo):
                 lt.addLast(listCities, ufo)
                 om.put(catalog["cities"], city, listCities)
 
+        datetime = ufo["datetime"]
+        hour = datetime[11:19]
+        isPresent = om.contains(catalog["hours"], hour)
+        if isPresent == True:
+                listHours = om.get(catalog["hours"], hour)["value"]
+                lt.addLast(listHours, ufo)
+                om.put(catalog["hours"], hour, listHours)
+        else:
+                listHours = lt.newList('ARRAY_LIST')
+                lt.addLast(listHours, ufo)
+                om.put(catalog["hours"], hour, listHours)
+
 
 # Funciones para agregar informacion al catalogo
 
@@ -75,8 +88,24 @@ def ufosByCity(catalog, city):
 
         return cityUfosList
 
+def ufosByHour(catalog, hour0, hour1):
+        hoursTree = catalog["hours"]
+        filtredValues = om.values(hoursTree, hour0, hour1) #Lista de listas
+
+        for y in range(1, lt.size(filtredValues)+1):
+                actualHour = lt.getElement(filtredValues, y)
+                ms.sort(actualHour, cmpDateHour)
+
+        return filtredValues
 
 # Funciones utilizadas para comparar elementos dentro de una lista
+def cmpDateHour(ufo1, ufo2):
+        datetime1str = ufo1["datetime"]
+        datetime2str = ufo2["datetime"]
+        time1 = datetime.strptime(datetime1str, "%Y-%m-%d %H:%M:%S")
+        time2 = datetime.strptime(datetime2str, "%Y-%m-%d %H:%M:%S")
+
+        return time1 < time2
 
 # Funciones de ordenamiento
 def cmpStrings(string1, string2):
@@ -87,10 +116,14 @@ def cmpStrings(string1, string2):
         else:
                 return -1
 
-def cmpDateHour(ufo1, ufo2):
-        datetime1str = ufo1["datetime"]
-        datetime2str = ufo2["datetime"]
-        time1 = datetime.strptime(datetime1str, "%Y-%m-%d %H:%M:%S")
-        time2 = datetime.strptime(datetime2str, "%Y-%m-%d %H:%M:%S")
+def cmpHours(hour1, hour2):
+        time1 = datetime.strptime(hour1, "%H:%M:%S")
+        time2 = datetime.strptime(hour2, "%H:%M:%S")
+        if (time1 == time2):
+                return 0
+        elif (time1 > time2):
+                return 1
+        else:
+                return -1
 
-        return time1 < time2
+
