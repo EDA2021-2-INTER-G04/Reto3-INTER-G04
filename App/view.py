@@ -55,6 +55,7 @@ def printMenu():
     print("4- Contar avistamientos por hora/minutos del día")
     print("5- Contar los avistamientos en un rango de fechas")
     print("6- Contar los avistamientos de una zona geográfica")
+    print("7- Visualizar los avistamientos de una zona geográfica")
 
 catalog = None
 
@@ -150,9 +151,63 @@ while True:
             actualUFO = lt.getElement(lastThree, t)
             print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"], ", ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"], ", Forma: ", actualUFO["shape"])
 
-        
+    elif int(inputs[0]) == 6:
+        lonMin = str(round(float(input("Ingrese el límite inferior de longitud: ")),2))
+        lonMax = str(round(float(input("Ingrese el límite superior de longitud: ")),2))
+        latMin = str(round(float(input("Ingrese el límite inferior de latitud: ")),2))
+        latMax = str(round(float(input("Ingrese el límite superior de latitud: ")),2))
 
-            
+        listUfosInZone = controller.ufosByZone(catalog, lonMin, lonMax, latMin, latMax)
+
+        print("\nEl total de avistamientos dentro del área es de: ", lt.size(listUfosInZone))
+
+        if lt.size(listUfosInZone) != 0:
+            if lt.size(listUfosInZone) // 2 < 5:
+                sample1 = lt.size(listUfosInZone) // 2
+                sample2 = lt.size(listUfosInZone) - sample1
+            else:
+                sample1 = 5
+                sample2 = sample1
+
+            for n in range(1, sample1+1):
+                actualUFO = lt.getElement(listUfosInZone, n)
+                print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"],", ",  actualUFO["country"], ", Forma: ", actualUFO["shape"], ", Duración: ", actualUFO["duration (seconds)"], ", Coordenadas (lat, long): ", actualUFO["latitude"],", ", actualUFO["longitude"])
+            print("="*100)
+            for m in range(1, sample2+1):
+                index = (lt.size(listUfosInZone)-sample2)+m
+                actualUFO = lt.getElement(listUfosInZone, index)
+                print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"],", ", actualUFO["country"], ", Forma: ", actualUFO["shape"], ", Duración: ", actualUFO["duration (seconds)"], ", Coordenadas (lat, long): ", actualUFO["latitude"],", ", actualUFO["longitude"])
+    
+    elif int(inputs[0]) == 7:
+        lonMin = str(round(float(input("Ingrese el límite inferior de longitud: ")),2))
+        lonMax = str(round(float(input("Ingrese el límite superior de longitud: ")),2))
+        latMin = str(round(float(input("Ingrese el límite inferior de latitud: ")),2))
+        latMax = str(round(float(input("Ingrese el límite superior de latitud: ")),2))
+        lonAvg = (float(lonMin)+float(lonMax))/2
+        latAvg = (float(latMin)+float(latMax))/2
+
+        listUfosInZone = controller.ufosByZone(catalog, lonMin, lonMax, latMin, latMax)
+
+        print("\nEl total de avistamientos dentro del área es de: ", lt.size(listUfosInZone))
+
+        if lt.size(listUfosInZone) != 0:
+            if lt.size(listUfosInZone) // 2 < 5:
+                sample1 = lt.size(listUfosInZone) // 2
+                sample2 = lt.size(listUfosInZone) - sample1
+            else:
+                sample1 = 5
+                sample2 = sample1
+
+            for n in range(1, sample1+1):
+                actualUFO = lt.getElement(listUfosInZone, n)
+                print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"],", ",  actualUFO["country"], ", Forma: ", actualUFO["shape"], ", Duración: ", actualUFO["duration (seconds)"], ", Coordenadas (lat, long): ", actualUFO["latitude"],", ", actualUFO["longitude"])
+            print("="*100)
+            for m in range(1, sample2+1):
+                index = (lt.size(listUfosInZone)-sample2)+m
+                actualUFO = lt.getElement(listUfosInZone, index)
+                print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"],", ", actualUFO["country"], ", Forma: ", actualUFO["shape"], ", Duración: ", actualUFO["duration (seconds)"], ", Coordenadas (lat, long): ", actualUFO["latitude"],", ", actualUFO["longitude"])
+        
+            controller.sightningsMap(lonAvg,latAvg)
 
     else:
         sys.exit(0)

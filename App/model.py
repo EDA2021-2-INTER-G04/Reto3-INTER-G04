@@ -29,8 +29,9 @@ import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
-from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import shellsort as ss
 from DISClib.Algorithms.Sorting import mergesort as ms
+#import folium
 from datetime import datetime
 from DISClib.ADT import orderedmap as om
 assert cf
@@ -47,9 +48,11 @@ def newCatalog():
         catalog["ufos"] = lt.newList("ARRAY_LIST")
         catalog["cities"] = om.newMap(omaptype="RBT", comparefunction=cmpStrings)
         catalog["hours"] = om.newMap(omaptype="RBT", comparefunction=cmpHours)
+        catalog["longitude"] = om.newMap(omaptype="RBT", comparefunction=cmpFloats)
 
         return catalog
 
+# Funciones para agregar informacion al catalogo
 def addUFO(catalog, ufo):
         lt.addLast(catalog["ufos"], ufo)
 
@@ -76,12 +79,37 @@ def addUFO(catalog, ufo):
                 lt.addLast(listHours, ufo)
                 om.put(catalog["hours"], hour, listHours)
 
-
-# Funciones para agregar informacion al catalogo
+        longitude = str(round(float(ufo["longitude"]),2))
+        isPresent = om.contains(catalog["longitude"], longitude)
+        if isPresent == True:
+                listLongitude = om.get(catalog["longitude"], longitude)["value"]
+                lt.addLast(listLongitude, ufo)
+                om.put(catalog["longitude"], longitude, listLongitude)
+        else:
+                listLongitude = lt.newList('ARRAY_LIST')
+                lt.addLast(listLongitude, ufo)
+                ms.sort(listLongitude, cmpLatitudes)
+                om.put(catalog["longitude"], longitude, listLongitude)
 
 # Funciones para creacion de datos
 
 # Funciones de consulta
+def ufosByZone(catalog, lonMin, lonMax, latMin, latMax):
+        latMin = float(latMin)
+        latMax = float(latMax)
+        longitudeTree = catalog["longitude"]
+        longitudeList = om.values(longitudeTree, lonMin, lonMax) #Lista de listas
+        filtredList = lt.newList("ARRAY_LIST")
+        for w in range(1, lt.size(longitudeList)+1):
+                actualLongitude = lt.getElement(longitudeList, w)
+                for h in range(1, lt.size(actualLongitude)+1):
+                        actualUfo = lt.getElement(actualLongitude, h)
+                        actualLatitude = round(float(actualUfo["latitude"]),2)
+                        if latMin <= actualLatitude <= latMax:
+                                lt.addLast(filtredList, actualUfo)
+
+        return filtredList
+
 def ufosByCity(catalog, city):
         cityUfosList = om.get(catalog["cities"], city)["value"]
         ms.sort(cityUfosList, cmpDateHour)        
@@ -98,7 +126,17 @@ def ufosByHour(catalog, hour0, hour1):
 
         return filtredValues
 
+#def sightningsMap(lonAvg,latAvg):
+        map = folium.Map(location=[latAvg,lonAvg])
+        print(map)
+
 # Funciones utilizadas para comparar elementos dentro de una lista
+def cmpLatitudes(ufo1, ufo2):
+        latitude1 = round(float(ufo1["latitude"]),2)
+        latitude2 = round(float(ufo2["latitude"]),2)
+
+        return latitude1 < latitude2
+
 def cmpDateHour(ufo1, ufo2):
         datetime1str = ufo1["datetime"]
         datetime2str = ufo2["datetime"]
@@ -108,6 +146,16 @@ def cmpDateHour(ufo1, ufo2):
         return time1 < time2
 
 # Funciones de ordenamiento
+def cmpFloats(float1, float2):
+        float1 = float(float1)
+        float2 = float(float2)
+        if (float1 == float2):
+                return 0
+        elif (float1 > float2):
+                return 1
+        else:
+                return -1
+
 def cmpStrings(string1, string2):
         if (string1 == string2):
                 return 0

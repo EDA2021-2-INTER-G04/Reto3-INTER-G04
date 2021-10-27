@@ -62,6 +62,18 @@ def loadData(catalog, sample):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+def ufosByZone(catalog, lonMin, lonMax, latMin, latMax):
+    if float(lonMax) < float(lonMin):
+        temp = lonMax
+        lonMax = lonMin
+        lonMin = temp
+    if float(latMax) < float(latMin):
+        temp = latMax
+        latMax = latMin
+        latMin = temp
+
+    return model.ufosByZone(catalog, lonMin, lonMax, latMin, latMax)
+    
 def ufosByCity(catalog, city):
 
     return model.ufosByCity(catalog, city)
@@ -69,3 +81,8 @@ def ufosByCity(catalog, city):
 def ufosByHour(catalog, hour0, hour1):
 
     return model.ufosByHour(catalog, hour0, hour1)
+
+def sightningsMap(lonAvg,latAvg):
+    lonAvg = round(lonAvg,5)
+    latAvg = round(latAvg,5)
+    model.sightningsMap(lonAvg,latAvg)
