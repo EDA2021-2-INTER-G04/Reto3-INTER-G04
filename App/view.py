@@ -151,7 +151,7 @@ while True:
             actualUFO = lt.getElement(lastThree, t)
             print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"], ", ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"], ", Forma: ", actualUFO["shape"])
 
-    elif int(inputs[0]) == 6 or int(inputs[0] == 7):
+    elif (int(inputs[0])) == 6 or (int(inputs[0])) == 7:
         lonMin = str(round(float(input("Ingrese el límite inferior de longitud: ")),2))
         lonMax = str(round(float(input("Ingrese el límite superior de longitud: ")),2))
         latMin = str(round(float(input("Ingrese el límite inferior de latitud: ")),2))
@@ -182,7 +182,7 @@ while True:
             lonAvg = (float(lonMin)+float(lonMax))/2
             latAvg = (float(latMin)+float(latMax))/2
 
-            controller.sightningsMap(lonAvg,latAvg)
+            controller.sightningsMap(lonAvg,latAvg,listUfosInZone)
 
     else:
         sys.exit(0)

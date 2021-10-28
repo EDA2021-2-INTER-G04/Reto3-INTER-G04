@@ -31,7 +31,9 @@ from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as ss
 from DISClib.Algorithms.Sorting import mergesort as ms
-#import folium
+import folium
+import branca
+import webbrowser
 from datetime import datetime
 from DISClib.ADT import orderedmap as om
 assert cf
@@ -126,9 +128,20 @@ def ufosByHour(catalog, hour0, hour1):
 
         return filtredValues
 
-#def sightningsMap(lonAvg,latAvg):
-        map = folium.Map(location=[latAvg,lonAvg])
-        print(map)
+def sightningsMap(lonAvg,latAvg,listUfosInZone):
+        map = folium.Map(location=[latAvg,lonAvg], zoom_start=7, control_scale=True)
+
+        for n in range(1, lt.size(listUfosInZone)+1):
+                actualUfo = lt.getElement(listUfosInZone, n)
+                html = branca.element.IFrame(html="</b>"+actualUfo["datetime"][0:10]+"</b>", width=125, height=35)
+                folium.Marker(
+                        location=[float(actualUfo["latitude"]), float(actualUfo["longitude"])],
+                        popup=folium.Popup(html),
+                        icon=folium.Icon(icon="cloud"),).add_to(map)
+        map.save("map.html")
+        mapDir = cf.file_dir + "/map.html"
+        print(mapDir)
+        webbrowser.open(mapDir, new=1)
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 def cmpLatitudes(ufo1, ufo2):
