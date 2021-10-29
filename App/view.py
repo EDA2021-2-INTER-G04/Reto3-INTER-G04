@@ -23,6 +23,7 @@
 import config as cf
 import sys
 import controller
+import time
 from DISClib.ADT import orderedmap as om
 from DISClib.ADT import list as lt
 assert cf
@@ -77,6 +78,7 @@ while True:
         print("8- Large")
         sample = int(input())
         print("Cargando información de los archivos ....")
+        start_time = time.process_time()
         catalog = initCatalog()
         loadData(catalog, sample)
         print("\nEl número de avistamientos cargados fue de ", lt.size(catalog["ufos"]))
@@ -88,9 +90,14 @@ while True:
             index = (lt.size(catalog["ufos"])-5)+m
             actualUFO = lt.getElement(catalog["ufos"], index)
             print("Fecha: ", actualUFO["datetime"], ", Ciudad: ", actualUFO["city"], ", País: ", actualUFO["country"], ", Forma: ", actualUFO["shape"], ", Duración: ", actualUFO["duration (seconds)"])
+        stop_time = time.process_time()
+        elapsed_time_ms = (stop_time-start_time)*1000
+        print("\nLa carga de datos tardó ", elapsed_time_ms, " ms.")
+
 
     elif int(inputs[0]) == 2:
         city = input("Ingrese la ciudad a consultar: ")
+        start_time = time.process_time()
         sightnings = controller.ufosByCity(catalog, city)
         print("\nEl número de elementos en el árbol rojo negro por ciudades es de ",om.size(catalog["cities"]) )
         print("La altura del árbol rojo negro por ciudades es de ", om.height(catalog["cities"]))
@@ -104,10 +111,14 @@ while True:
             index = (lt.size(sightnings)-3)+w
             actualUFO = lt.getElement(sightnings, index)
             print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"], ", ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"], ", Forma: ", actualUFO["shape"])
+        stop_time = time.process_time()
+        elapsed_time_ms = (stop_time-start_time)*1000
+        print("\nLa operación tardó ", elapsed_time_ms, " ms.")
 
     elif int(inputs[0]) == 4:
         hour0 = input("Ingrese desde qué hora filtrar los avistamientos (HH:MM): ")+":00"
         hour1 = input("Ingrese hasta qué hora filtrar los avistamientos (HH:MM): ")+":00"
+        start_time = time.process_time()
         filtredUfos = controller.ufosByHour(catalog, hour0, hour1)
         size = 0
         for l in range(1, lt.size(filtredUfos)+1):
@@ -150,12 +161,16 @@ while True:
         for t in range(1, 4):
             actualUFO = lt.getElement(lastThree, t)
             print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"], ", ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"], ", Forma: ", actualUFO["shape"])
+        stop_time = time.process_time()
+        elapsed_time_ms = (stop_time-start_time)*1000
+        print("\nLa operación tardó ", elapsed_time_ms, " ms.")
 
     elif (int(inputs[0])) == 6 or (int(inputs[0])) == 7:
         lonMin = str(round(float(input("Ingrese el límite inferior de longitud: ")),2))
         lonMax = str(round(float(input("Ingrese el límite superior de longitud: ")),2))
         latMin = str(round(float(input("Ingrese el límite inferior de latitud: ")),2))
         latMax = str(round(float(input("Ingrese el límite superior de latitud: ")),2))
+        start_time = time.process_time()
 
         listUfosInZone = controller.ufosByZone(catalog, lonMin, lonMax, latMin, latMax)
 
@@ -177,12 +192,20 @@ while True:
                 index = (lt.size(listUfosInZone)-sample2)+m
                 actualUFO = lt.getElement(listUfosInZone, index)
                 print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"],", ", actualUFO["country"], ", Forma: ", actualUFO["shape"], ", Duración: ", actualUFO["duration (seconds)"], ", Coordenadas (lat, long): ", actualUFO["latitude"],", ", actualUFO["longitude"])
-    
+        if int(inputs[0]) == 6:
+            stop_time = time.process_time()
+            elapsed_time_ms = (stop_time-start_time)*1000
+            print("\nLa operación tardó ", elapsed_time_ms, " ms.")
+
         if int(inputs[0]) == 7:
             lonAvg = (float(lonMin)+float(lonMax))/2
             latAvg = (float(latMin)+float(latMax))/2
 
             controller.sightningsMap(lonAvg,latAvg,listUfosInZone)
+
+            stop_time = time.process_time()
+            elapsed_time_ms = (stop_time-start_time)*1000
+            print("\nLa operación tardó ", elapsed_time_ms, " ms.")
 
     else:
         sys.exit(0)

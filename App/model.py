@@ -82,32 +82,40 @@ def addUFO(catalog, ufo):
                 om.put(catalog["hours"], hour, listHours)
 
         longitude = str(round(float(ufo["longitude"]),2))
+        latitude = str(round(float(ufo["latitude"]),2))
         isPresent = om.contains(catalog["longitude"], longitude)
         if isPresent == True:
-                listLongitude = om.get(catalog["longitude"], longitude)["value"]
-                lt.addLast(listLongitude, ufo)
-                om.put(catalog["longitude"], longitude, listLongitude)
+                mapLatitudes = om.get(catalog["longitude"], longitude)["value"]
+                if om.contains(mapLatitudes, latitude) == True:
+                        listLatitude = om.get(mapLatitudes, latitude)["value"]
+                        lt.addLast(listLatitude, ufo)
+                        om.put(mapLatitudes, latitude, listLatitude)
+                else:
+                        listLatitude = lt.newList('ARRAY_LIST')
+                        lt.addLast(listLatitude, ufo)
+                        om.put(mapLatitudes, latitude, listLatitude)
+                om.put(catalog["longitude"], longitude, mapLatitudes)
         else:
-                listLongitude = lt.newList('ARRAY_LIST')
-                lt.addLast(listLongitude, ufo)
-                ms.sort(listLongitude, cmpLatitudes)
-                om.put(catalog["longitude"], longitude, listLongitude)
+                mapLatitudes = om.newMap("RBT",cmpFloats)
+                listLatitude = lt.newList('ARRAY_LIST')
+                lt.addLast(listLatitude, ufo)
+                om.put(mapLatitudes, latitude, listLatitude)
+                om.put(catalog["longitude"], longitude, mapLatitudes)
 
 # Funciones para creacion de datos
 
 # Funciones de consulta
 def ufosByZone(catalog, lonMin, lonMax, latMin, latMax):
-        latMin = float(latMin)
-        latMax = float(latMax)
-        longitudeTree = catalog["longitude"]
-        longitudeList = om.values(longitudeTree, lonMin, lonMax) #Lista de listas
+        longitudeTree = catalog["longitude"] 
+        longitudeMaps = om.values(longitudeTree, lonMin, lonMax) #Lista de mapas
         filtredList = lt.newList("ARRAY_LIST")
-        for w in range(1, lt.size(longitudeList)+1):
-                actualLongitude = lt.getElement(longitudeList, w)
-                for h in range(1, lt.size(actualLongitude)+1):
-                        actualUfo = lt.getElement(actualLongitude, h)
-                        actualLatitude = round(float(actualUfo["latitude"]),2)
-                        if latMin <= actualLatitude <= latMax:
+        for w in range(1, lt.size(longitudeMaps)+1):
+                actualLongitude = lt.getElement(longitudeMaps, w) #Mapa de latitudes de una longitud
+                latitudeList = om.values(actualLongitude, latMin, latMax) #Lista de listas
+                for h in range(1, lt.size(latitudeList)+1):
+                        actualLatitude = lt.getElement(latitudeList, h)
+                        for y in range(1, lt.size(actualLatitude)+1):
+                                actualUfo = lt.getElement(actualLatitude, y)
                                 lt.addLast(filtredList, actualUfo)
 
         return filtredList
