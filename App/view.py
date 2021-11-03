@@ -57,6 +57,7 @@ def printMenu():
     print("5- Contar los avistamientos en un rango de fechas")
     print("6- Contar los avistamientos de una zona geográfica")
     print("7- Visualizar los avistamientos de una zona geográfica")
+    print("0- Salir")
 
 catalog = None
 
@@ -110,6 +111,48 @@ while True:
         for w in range(1,4):
             index = (lt.size(sightnings)-3)+w
             actualUFO = lt.getElement(sightnings, index)
+            print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"], ", ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"], ", Forma: ", actualUFO["shape"])
+        stop_time = time.process_time()
+        elapsed_time_ms = (stop_time-start_time)*1000
+        print("\nLa operación tardó ", elapsed_time_ms, " ms.")
+    
+    elif int(inputs[0]) == 3:
+        duration0 = float(input("Ingrese desde qué segundo filtrar los avistamientos: "))
+        duration1 = float(input("Ingrese hasta qué segundo filtrar los avistamientos: "))
+        start_time = time.process_time()
+        filtredUfos = controller.ufosBySeconds(catalog, duration0, duration1)
+        size = 0
+        for k in range(1, lt.size(filtredUfos)+1):
+            actualSecond = lt.getElement(filtredUfos, k)
+            size += 1
+
+        seconds = om.keySet(catalog["seconds"])
+        print("\nLas duraciones en segundos más largas donde se han visto OVNIs son:")
+        for m in range(1,6):
+            index = (lt.size(seconds)+1)-m
+            actualSecond = lt.getElement(seconds, index)
+            print(actualSecond, ": ", lt.size(om.get(catalog["seconds"], actualSecond)["value"]), " avistamientos.")
+
+        print("\nHay registro de ", size, " avistamientos entre los segundos ", duration0, " y ", duration1)
+
+        bigIndex = 1
+        counted = 1
+        while bigIndex <= lt.size(filtredUfos) and counted <= 3:
+            actualUFO = lt.getElement(filtredUfos, bigIndex)
+            print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"], ", ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"], ", Forma: ", actualUFO["shape"])
+            counted += 1
+            bigIndex += 1
+        print("="*100)
+        lastThree = lt.newList("SINGLE_LINKED")
+        bigIndex = lt.size(filtredUfos)
+        counted = 1
+        while 1 <= bigIndex <= lt.size(filtredUfos) and counted <= 3:
+            actualUFO = lt.getElement(filtredUfos, bigIndex)
+            lt.addFirst(lastThree, actualUFO)
+            counted += 1
+            bigIndex -= 1
+        for t in range(1, 4):
+            actualUFO = lt.getElement(lastThree, t)
             print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"], ", ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"], ", Forma: ", actualUFO["shape"])
         stop_time = time.process_time()
         elapsed_time_ms = (stop_time-start_time)*1000

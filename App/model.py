@@ -50,6 +50,7 @@ def newCatalog():
         catalog["ufos"] = lt.newList("ARRAY_LIST")
         catalog["cities"] = om.newMap(omaptype="RBT", comparefunction=cmpStrings)
         catalog["hours"] = om.newMap(omaptype="RBT", comparefunction=cmpHours)
+        catalog["seconds"] = om.newMap(omaptype="RBT", comparefunction=cmpSeconds)
         catalog["longitude"] = om.newMap(omaptype="RBT", comparefunction=cmpFloats)
 
         return catalog
@@ -80,7 +81,18 @@ def addUFO(catalog, ufo):
                 listHours = lt.newList('ARRAY_LIST')
                 lt.addLast(listHours, ufo)
                 om.put(catalog["hours"], hour, listHours)
-
+        
+        second = ufo["duration (seconds)"]
+        isPresent = om.contains(catalog["seconds"], second)
+        if isPresent == True:
+                listSeconds = om.get(catalog["seconds"], second)["value"]
+                lt.addLast(listSeconds, ufo)
+                om.put(catalog["seconds"], second, listSeconds)
+        else:
+                listSeconds = lt.newList('ARRAY_LIST')
+                lt.addLast(listSeconds, ufo)
+                om.put(catalog["seconds"], second, listSeconds)
+        
         longitude = str(round(float(ufo["longitude"]),2))
         latitude = str(round(float(ufo["latitude"]),2))
         isPresent = om.contains(catalog["longitude"], longitude)
@@ -136,6 +148,22 @@ def ufosByHour(catalog, hour0, hour1):
 
         return filtredValues
 
+def ufosBySeconds(catalog, duration0, duration1):
+        secondsTree = catalog["seconds"]
+        filtredValuesD = om.values(secondsTree, duration0, duration1) #Lista de listas
+        filtredChrono = lt.newList(datastructure="ARRAY_LIST")
+        
+        for s in range(1, lt.size(filtredValuesD)+1):
+                actualSecond = lt.getElement(filtredValuesD, s)
+                for n in range(1, lt.size(actualSecond)+1):
+                        actualElement = lt.getElement(actualSecond, n)
+                        lt.addLast(filtredChrono, actualElement)
+
+        ms.sort(filtredChrono, cmpDuration)
+        ms.sort(filtredChrono, cmpDateHour)
+
+        return filtredChrono
+
 def sightningsMap(lonAvg,latAvg,listUfosInZone):
         map = folium.Map(location=[latAvg,lonAvg], zoom_start=7, control_scale=True)
 
@@ -166,6 +194,12 @@ def cmpDateHour(ufo1, ufo2):
 
         return time1 < time2
 
+def cmpDuration(ufo1, ufo2):
+        countryCity1 = ufo1["country"], ufo1["city"]
+        countryCity2 = ufo2["country"], ufo2["city"]
+
+        return countryCity1 < countryCity2
+
 # Funciones de ordenamiento
 def cmpFloats(float1, float2):
         float1 = float(float1)
@@ -194,5 +228,17 @@ def cmpHours(hour1, hour2):
                 return 1
         else:
                 return -1
+
+def cmpSeconds(duration1, duration2):
+        duration1 = float(duration1)
+        duration2 = float(duration2)
+
+        if (duration1 == duration2):
+                return 0
+        elif (duration1 > duration2):
+                return 1
+        else:
+                return -1
+
 
 
