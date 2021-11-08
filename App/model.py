@@ -52,6 +52,7 @@ def newCatalog():
         catalog["hours"] = om.newMap(omaptype="RBT", comparefunction=cmpHours)
         catalog["seconds"] = om.newMap(omaptype="RBT", comparefunction=cmpSeconds)
         catalog["longitude"] = om.newMap(omaptype="RBT", comparefunction=cmpFloats)
+        catalog["date"] = om.newMap(omaptype="RBT", comparefunction=cmpDates)
 
         return catalog
 
@@ -92,6 +93,18 @@ def addUFO(catalog, ufo):
                 listSeconds = lt.newList('ARRAY_LIST')
                 lt.addLast(listSeconds, ufo)
                 om.put(catalog["seconds"], second, listSeconds)
+
+        datetime = ufo["datetime"]
+        date = datetime[:10]
+        isPresent = om.contains(catalog["date"], date)
+        if isPresent == True:
+                listDate= om.get(catalog["date"], date)["value"]
+                lt.addLast(listDate, ufo)
+                om.put(catalog["date"], date, listDate)
+        else:
+                listDate = lt.newList('ARRAY_LIST')
+                lt.addLast(listDate, ufo)
+                om.put(catalog["date"], date, listDate)
         
         longitude = str(round(float(ufo["longitude"]),2))
         latitude = str(round(float(ufo["latitude"]),2))
@@ -164,6 +177,21 @@ def ufosBySeconds(catalog, duration0, duration1):
 
         return filtredChrono
 
+def ufosByDate(catalog, date0, date1):
+        dateTree = catalog["date"]
+        filtredValuesD = om.values(dateTree, date0, date1) #Lista de listas
+        filtredChrono = lt.newList(datastructure="ARRAY_LIST")
+        
+        for s in range(1, lt.size(filtredValuesD)+1):
+                actualDate = lt.getElement(filtredValuesD, s)
+                for n in range(1, lt.size(actualDate)+1):
+                        actualElement = lt.getElement(actualDate, n)
+                        lt.addLast(filtredChrono, actualElement)
+
+        ms.sort(filtredChrono, cmpDateHour)
+
+        return filtredChrono
+
 def sightningsMap(lonAvg,latAvg,listUfosInZone):
         map = folium.Map(location=[latAvg,lonAvg], zoom_start=7, control_scale=True)
 
@@ -191,6 +219,16 @@ def cmpDateHour(ufo1, ufo2):
         datetime2str = ufo2["datetime"]
         time1 = datetime.strptime(datetime1str, "%Y-%m-%d %H:%M:%S")
         time2 = datetime.strptime(datetime2str, "%Y-%m-%d %H:%M:%S")
+
+        return time1 < time2
+
+def cmpDate(ufo1, ufo2):
+
+        datetime1str = ufo1["datetime"]
+        datetime2str = ufo2["datetime"]
+
+        time1 = datetime.strptime(datetime1str, "%Y-%m-%d")
+        time2 = datetime.strptime(datetime2str, "%Y-%m-%d")
 
         return time1 < time2
 
@@ -240,5 +278,16 @@ def cmpSeconds(duration1, duration2):
         else:
                 return -1
 
+def cmpDates(ufo1, ufo2):
+    
+        time1 = datetime.strptime(ufo1, "%Y-%m-%d")
+        time2 = datetime.strptime(ufo2, "%Y-%m-%d")
+
+        if (time1 == time2):
+                return 0
+        elif (time1 > time2):
+                return 1
+        else:
+                return -1
 
 

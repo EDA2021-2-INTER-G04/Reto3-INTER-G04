@@ -86,6 +86,10 @@ def ufosBySeconds(catalog, duration0, duration1):
 
     return model.ufosBySeconds(catalog, duration0, duration1)
 
+def ufosByDate(catalog, date0, date1):
+
+    return model.ufosByDate(catalog, date0, date1)
+
 def sightningsMap(lonAvg,latAvg,listUfosInZone):
     lonAvg = round(lonAvg,5)
     latAvg = round(latAvg,5)

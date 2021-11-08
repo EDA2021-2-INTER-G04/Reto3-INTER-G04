@@ -139,7 +139,9 @@ while True:
         counted = 1
         while bigIndex <= lt.size(filtredUfos) and counted <= 3:
             actualUFO = lt.getElement(filtredUfos, bigIndex)
-            print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"], ", ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"], ", Forma: ", actualUFO["shape"])
+            print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad: ", actualUFO["city"], ", Estado: ", actualUFO["state"] 
+            , ", País: ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"]
+            , ", Forma: ", actualUFO["shape"])
             counted += 1
             bigIndex += 1
         print("="*100)
@@ -153,7 +155,9 @@ while True:
             bigIndex -= 1
         for t in range(1, 4):
             actualUFO = lt.getElement(lastThree, t)
-            print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"], ", ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"], ", Forma: ", actualUFO["shape"])
+            print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad: ", actualUFO["city"], ", Estado: ", actualUFO["state"] 
+            , ", País: ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"]
+            , ", Forma: ", actualUFO["shape"])
         stop_time = time.process_time()
         elapsed_time_ms = (stop_time-start_time)*1000
         print("\nLa operación tardó ", elapsed_time_ms, " ms.")
@@ -204,6 +208,50 @@ while True:
         for t in range(1, 4):
             actualUFO = lt.getElement(lastThree, t)
             print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad y país: ", actualUFO["city"], ", ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"], ", Forma: ", actualUFO["shape"])
+        stop_time = time.process_time()
+        elapsed_time_ms = (stop_time-start_time)*1000
+        print("\nLa operación tardó ", elapsed_time_ms, " ms.")
+    
+    elif int(inputs[0]) == 5:
+        date0 = input("Ingrese desde qué fecha filtrar los avistamientos: (AAAA-MM-DD) ")
+        date1 = input("Ingrese hasta qué fecha filtrar los avistamientos: (AAAA-MM-DD) ")
+        start_time = time.process_time()
+        filtredUfos = controller.ufosByDate(catalog, date0, date1)
+        size = 0
+        for k in range(1, lt.size(filtredUfos)+1):
+            actualDate = lt.getElement(filtredUfos, k)
+            size += 1
+
+        date = om.keySet(catalog["date"])
+        print("\nLas 5 fechas más antiguas donde se han visto OVNIs son:")
+        for m in range(1,6):
+            actualDate = lt.getElement(date, m)
+            print(actualDate, ": ", lt.size(om.get(catalog["date"], actualDate)["value"]), " avistamientos.")
+
+        print("\nHay registro de ", size, " avistamientos entre los años ", date0, " y ", date1)
+
+        bigIndex = 1
+        counted = 1
+        while bigIndex <= lt.size(filtredUfos) and counted <= 3:
+            actualUFO = lt.getElement(filtredUfos, bigIndex)
+            print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad: ", actualUFO["city"], ", Estado: ", actualUFO["state"] 
+            , ", País: ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"]
+            , ", Forma: ", actualUFO["shape"])
+            counted += 1
+            bigIndex += 1
+        print("="*100)
+        lastThree = lt.newList("SINGLE_LINKED")
+        bigIndex = lt.size(filtredUfos)
+        counted = 1
+        while 1 <= bigIndex <= lt.size(filtredUfos) and counted <= 3:
+            actualUFO = lt.getElement(filtredUfos, bigIndex)
+            lt.addFirst(lastThree, actualUFO)
+            counted += 1
+            bigIndex -= 1
+        for t in range(1, 4):
+            actualUFO = lt.getElement(lastThree, t)
+            print("Fecha y hora: ", actualUFO["datetime"], ", Ciudad: ", actualUFO["city"], ", Estado: ", actualUFO["state"], ", País: ", actualUFO["country"], ", Duración (s): ", actualUFO["duration (seconds)"]
+            , ", Forma: ", actualUFO["shape"])
         stop_time = time.process_time()
         elapsed_time_ms = (stop_time-start_time)*1000
         print("\nLa operación tardó ", elapsed_time_ms, " ms.")
