@@ -133,13 +133,13 @@ def addUFO(catalog, ufo):
 def ufosByZone(catalog, lonMin, lonMax, latMin, latMax):
         longitudeTree = catalog["longitude"] 
         longitudeMaps = om.values(longitudeTree, lonMin, lonMax) #Lista de mapas
-        filtredList = lt.newList("ARRAY_LIST")
-        for w in range(1, lt.size(longitudeMaps)+1):
+        filtredList = lt.newList("ARRAY_LIST") #O(1)
+        for w in range(1, lt.size(longitudeMaps)+1): #O(m)
                 actualLongitude = lt.getElement(longitudeMaps, w) #Mapa de latitudes de una longitud
                 latitudeList = om.values(actualLongitude, latMin, latMax) #Lista de listas
-                for h in range(1, lt.size(latitudeList)+1):
+                for h in range(1, lt.size(latitudeList)+1): #O(k)
                         actualLatitude = lt.getElement(latitudeList, h)
-                        for y in range(1, lt.size(actualLatitude)+1):
+                        for y in range(1, lt.size(actualLatitude)+1): #O(t)
                                 actualUfo = lt.getElement(actualLatitude, y)
                                 lt.addLast(filtredList, actualUfo)
 
@@ -155,9 +155,9 @@ def ufosByHour(catalog, hour0, hour1):
         hoursTree = catalog["hours"]
         filtredValues = om.values(hoursTree, hour0, hour1) #Lista de listas
 
-        for y in range(1, lt.size(filtredValues)+1):
+        for y in range(1, lt.size(filtredValues)+1): #O(m)
                 actualHour = lt.getElement(filtredValues, y)
-                ms.sort(actualHour, cmpDateHour)
+                ms.sort(actualHour, cmpDateHour) #O(k log(k))
 
         return filtredValues
 
@@ -192,8 +192,15 @@ def ufosByDate(catalog, date0, date1):
 
         return filtredChrono
 
-def sightningsMap(lonAvg,latAvg,listUfosInZone):
+def sightningsMap(lonAvg,latAvg,listUfosInZone,north,east,south,west):
         map = folium.Map(location=[latAvg,lonAvg], zoom_start=7, control_scale=True)
+
+        folium.Rectangle(
+        bounds=[[north,east],[south, west],[north,west],[south,east]],
+        color="#3186cc",
+        fill=True,
+        fill_color="#3186cc",
+        ).add_to(map)
 
         for n in range(1, lt.size(listUfosInZone)+1):
                 actualUfo = lt.getElement(listUfosInZone, n)

@@ -292,7 +292,7 @@ while True:
             lonAvg = (float(lonMin)+float(lonMax))/2
             latAvg = (float(latMin)+float(latMax))/2
 
-            controller.sightningsMap(lonAvg,latAvg,listUfosInZone)
+            controller.sightningsMap(lonAvg,latAvg,listUfosInZone,latMax,lonMax,latMin,lonMin)
 
             stop_time = time.process_time()
             elapsed_time_ms = (stop_time-start_time)*1000

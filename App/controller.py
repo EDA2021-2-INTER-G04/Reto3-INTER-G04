@@ -90,7 +90,11 @@ def ufosByDate(catalog, date0, date1):
 
     return model.ufosByDate(catalog, date0, date1)
 
-def sightningsMap(lonAvg,latAvg,listUfosInZone):
+def sightningsMap(lonAvg,latAvg,listUfosInZone,north,east,south,west):
     lonAvg = round(lonAvg,5)
     latAvg = round(latAvg,5)
-    model.sightningsMap(lonAvg,latAvg,listUfosInZone)
+    north = float(north)
+    east = float(east)
+    south = float(south)
+    west = float(west)
+    model.sightningsMap(lonAvg,latAvg,listUfosInZone,north,east,south,west)
