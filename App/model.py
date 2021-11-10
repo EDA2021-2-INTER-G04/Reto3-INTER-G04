@@ -32,7 +32,6 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as ss
 from DISClib.Algorithms.Sorting import mergesort as ms
 import folium
-import branca
 import webbrowser
 from datetime import datetime
 from DISClib.ADT import orderedmap as om
@@ -204,11 +203,35 @@ def sightningsMap(lonAvg,latAvg,listUfosInZone,north,east,south,west):
 
         for n in range(1, lt.size(listUfosInZone)+1):
                 actualUfo = lt.getElement(listUfosInZone, n)
-                html = branca.element.IFrame(html="</b>"+actualUfo["datetime"][0:10]+"</b>", width=125, height=35)
+                htmlStr = ""
+                htmlStr += '<table class="default">'
+                htmlStr += "<tr>"
+                htmlStr += "<th> Ciudad </th>"
+                htmlStr += "<th> Fecha y hora </th>"
+                htmlStr += "<th> Duración (s) </th>"
+                htmlStr += "<th> Forma </th>"
+                htmlStr += "</tr>"
+                htmlStr += "<tr>"
+                htmlStr += "<td>"
+                htmlStr += " "+actualUfo["city"]+" "
+                htmlStr += "</td>"
+                htmlStr += "<td>"
+                htmlStr += " "+actualUfo["datetime"]+" "
+                htmlStr += "</td>"
+                htmlStr += "<td>"
+                htmlStr += " "+actualUfo["duration (seconds)"]+" "
+                htmlStr += "</td>"
+                htmlStr += "<td>"
+                htmlStr += " "+actualUfo["shape"]+" "
+                htmlStr += "</td>"
+                htmlStr += "</tr>"
+                htmlStr += "</table>"
+
                 folium.Marker(
                         location=[float(actualUfo["latitude"]), float(actualUfo["longitude"])],
-                        popup=folium.Popup(html),
+                        popup=folium.Popup(htmlStr,),
                         icon=folium.Icon(icon="cloud"),).add_to(map)
+
         map.save("map.html")
         mapDir = cf.file_dir + "/map.html"
         print(mapDir)
