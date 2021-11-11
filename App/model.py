@@ -206,23 +206,23 @@ def sightningsMap(lonAvg,latAvg,listUfosInZone,north,east,south,west):
                 htmlStr = ""
                 htmlStr += '<table class="default">'
                 htmlStr += "<tr>"
-                htmlStr += "<th> Ciudad </th>"
-                htmlStr += "<th> Fecha y hora </th>"
-                htmlStr += "<th> Duración (s) </th>"
-                htmlStr += "<th> Forma </th>"
+                htmlStr += "<th>Ciudad</th>"
+                htmlStr += "<th>Fecha y hora</th>"
+                htmlStr += "<th>Duración (s)</th>"
+                htmlStr += "<th>Forma</th>"
                 htmlStr += "</tr>"
                 htmlStr += "<tr>"
                 htmlStr += "<td>"
-                htmlStr += " "+actualUfo["city"]+" "
+                htmlStr += actualUfo["city"]
                 htmlStr += "</td>"
                 htmlStr += "<td>"
-                htmlStr += " "+actualUfo["datetime"]+" "
+                htmlStr += actualUfo["datetime"]
                 htmlStr += "</td>"
                 htmlStr += "<td>"
-                htmlStr += " "+actualUfo["duration (seconds)"]+" "
+                htmlStr += actualUfo["duration (seconds)"]
                 htmlStr += "</td>"
                 htmlStr += "<td>"
-                htmlStr += " "+actualUfo["shape"]+" "
+                htmlStr += actualUfo["shape"]
                 htmlStr += "</td>"
                 htmlStr += "</tr>"
                 htmlStr += "</table>"
@@ -237,6 +237,21 @@ def sightningsMap(lonAvg,latAvg,listUfosInZone,north,east,south,west):
         print(mapDir)
         webbrowser.open(mapDir, new=1)
 
+def mostSightnings(catalog):
+        citiesTree = catalog["cities"]
+        cities = om.keySet(citiesTree)
+
+        biggerSize = 0
+        biggerCity = ""
+        for n in range(0, lt.size(cities)+1):
+                actualKey = lt.getElement(cities, n)
+                actualSize = lt.size(om.get(citiesTree, actualKey)["value"])
+                if actualSize > biggerSize:
+                        biggerSize = actualSize
+                        biggerCity = actualKey
+
+        return(biggerCity,biggerSize)
+        
 # Funciones utilizadas para comparar elementos dentro de una lista
 def cmpLatitudes(ufo1, ufo2):
         latitude1 = round(float(ufo1["latitude"]),2)

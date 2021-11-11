@@ -100,9 +100,11 @@ while True:
         city = input("Ingrese la ciudad a consultar: ")
         start_time = time.process_time()
         sightnings = controller.ufosByCity(catalog, city)
+        mostSightnings = controller.mostSightnings(catalog)
         print("\nEl número de elementos en el árbol rojo negro por ciudades es de ",om.size(catalog["cities"]) )
         print("La altura del árbol rojo negro por ciudades es de ", om.height(catalog["cities"]))
         print("\nEl número de ciudades donde se han visto OVNIs es de ", lt.size(om.keySet(catalog["cities"])))
+        print("\nLa ciudad en donde más se han visto OVNIs es ", mostSightnings[0], " con ", mostSightnings[1], " avistamientos.")
         print("\nSe han avistado ", lt.size(sightnings), " OVNIs en ", city)
         for n in range(1,4):
             actualUFO = lt.getElement(sightnings, n)

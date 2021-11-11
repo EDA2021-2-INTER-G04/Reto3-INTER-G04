@@ -93,8 +93,20 @@ def ufosByDate(catalog, date0, date1):
 def sightningsMap(lonAvg,latAvg,listUfosInZone,north,east,south,west):
     lonAvg = round(lonAvg,5)
     latAvg = round(latAvg,5)
-    north = float(north)
+    north = float(north) 
     east = float(east)
     south = float(south)
     west = float(west)
+    if east < west: #Verificar si los límites fueron puestos al revés, e invertirlos si es el caso
+        temp = east
+        east = west
+        west = temp
+    if north < south:
+        temp = north
+        north = south
+        south = temp
     model.sightningsMap(lonAvg,latAvg,listUfosInZone,north,east,south,west)
+
+def mostSightnings(catalog):
+
+    return model.mostSightnings(catalog)
